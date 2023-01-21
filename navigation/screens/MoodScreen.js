@@ -5,7 +5,6 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { Audio } from "expo-av";
 import * as Sharing from "expo-sharing";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import axios from "axios";
 
 const SERVER_URL = "23.119.122.47:5000";
 
@@ -24,9 +23,21 @@ export default function MoodScreen() {
           playsInSilentModeIOS: true,
         });
 
-        const { recording } = await Audio.Recording.createAsync(
-          Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-        );
+        const { recording } = await Audio.Recording.createAsync({
+          android: {
+            extension: ".mp4",
+            audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+            outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
+          },
+          ios: {
+            extension: ".wav",
+            sampleRate: 44100,
+            numberOfChannels: 2,
+            bitRate: 128000,
+            audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
+            outputFormat: Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM,
+          },
+        });
 
         setRecording(recording);
       } else {
