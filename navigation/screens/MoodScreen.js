@@ -6,11 +6,12 @@ import { Audio } from "expo-av";
 import * as Sharing from "expo-sharing";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const SERVER_URL = "23.119.122.47:5000";
+const SERVER_URL = "http://23.119.122.47:5000/analyze_audio";
 
 export default function MoodScreen() {
   const [recording, setRecording] = React.useState();
   const [recordings, setRecordings] = React.useState([]);
+  const [emotion, setEmotion] = React.useState("");
   const [message, setMessage] = React.useState("");
 
   async function startRecording() {
@@ -68,7 +69,7 @@ export default function MoodScreen() {
     formData.append("recording", { uri: localUri, name: filename });
 
     setRecordings(updatedRecordings);
-    fetch("http://23.119.122.47:5000/analyze_audio", {
+    fetch(SERVER_URL, {
       method: "POST",
       body: formData,
       headers: {
@@ -76,7 +77,10 @@ export default function MoodScreen() {
       },
     })
       .then((response) => response.json())
-      .then((data) => console.log(data));
+      .then((data) => {
+        console.log(data);
+        setEmotion(data["emotions"]);
+      });
   }
 
   function getDurationFormatted(millis) {
@@ -87,41 +91,56 @@ export default function MoodScreen() {
     return `${minutesDisplay}:${secondsDisplay}`;
   }
 
-  function getRecordingLines() {
-    return recordings.map((recordingLine, index) => {
-      return (
-        <View key={index} style={styles.row}>
-          <Text style={styles.fill}>
-            Recording {index + 1} - {recordingLine.duration}
-          </Text>
-          <Button
-            style={styles.button}
-            onPress={() => recordingLine.sound.replayAsync()}
-            title="Play"
-          ></Button>
-          {/* Send to server */}
-          {/* <Button
-            style={styles.button}
-            onPress={() => Sharing.shareAsync(recordingLine.file)}
-            title="Share"
-          ></Button> */}
-        </View>
-      );
-    });
+  // function getRecordingLines() {
+  //   return recordings.map((recordingLine, index) => {
+  //     return (
+  //       <View key={index} style={styles.row}>
+  //         <Text style={styles.fill}>
+  //           Recording {index + 1} - {recordingLine.duration}
+  //         </Text>
+  //         <Button
+  //           style={styles.button}
+  //           onPress={() => recordingLine.sound.replayAsync()}
+  //           title="Play"
+  //         ></Button>
+  //         <Button
+  //           style={styles.button}
+  //           onPress={() => Sharing.shareAsync(recordingLine.file)}
+  //           title="Share"
+  //         ></Button>
+  //       </View>
+  //     );
+  //   });
+  // }
+
+  function createPersonalizedPlaylist() {
+    fetch(SERVER_URL, {});
   }
 
   return (
     <View style={styles.container}>
-      <Text>Say something and get your music taste</Text>
+      <Text style={styles.text}>Say something and get your music taste</Text>
       <TouchableOpacity onPress={recording ? stopRecording : startRecording}>
         <View>
           {recording ? (
-            <Ionicons size={50} name="mic" />
+            <Ionicons color={"tomato"} size={50} name="mic" />
           ) : (
-            <Ionicons size={50} name="mic-outline" />
+            <Ionicons color={"gray"} size={50} name="mic-outline" />
           )}
         </View>
       </TouchableOpacity>
+      <View style={{ alignItems: "center" }}>
+        {emotion != "" ? (
+          <Text style={styles.text}>I think you are {emotion}</Text>
+        ) : (
+          <Text></Text>
+        )}
+        <TouchableOpacity onPress={() => {}}>
+          <View style={styles.buttonContainer}>
+            <Text style={styles.buttonText}>personalized playlist</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -131,6 +150,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-evenly",
     alignItems: "center",
-    backgroundColor: "linear-gradient(to right, #ffa600, #ff0000)",
+  },
+  text: {
+    color: "black",
+  },
+  buttonContainer: {
+    backgroundColor: "tomato",
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
   },
 });

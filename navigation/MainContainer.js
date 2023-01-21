@@ -30,7 +30,15 @@ function MainContainer() {
           tabBarInactiveTintColor: "gray",
         })}
       >
-        <Tab.Screen name="Mood" component={MoodScreen} />
+        <Tab.Screen
+          name="Mood"
+          component={MoodScreen}
+          options={{
+            headerStyle: {
+              backgroundColor: "tomato",
+            },
+          }}
+        />
         <Tab.Screen name="Social" component={SocialScreen} />
       </Tab.Navigator>
     </NavigationContainer>
