@@ -170,20 +170,17 @@ export default function MoodScreen() {
           </View>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity title="Data" onPress={() => {}}>
-        <Text style={{ color: "white" }}>Upload Songs</Text>
-      </TouchableOpacity>
       <View style={styles.emotionContainer}>
         {recording != "" && emotion != "starting" ? (
           <View>
             <Text style={styles.emotionText}>
               My analysis shows you are feeling {emotion}
             </Text>
-            <FlatList
+            {/* <FlatList
               data={info}
               showsVerticalScrollIndicator={false}
               renderItem={({ item }) => <View></View>}
-            />
+            /> */}
           </View>
         ) : (
           <Text></Text>
