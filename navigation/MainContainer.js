@@ -1,4 +1,5 @@
 import * as React from "react";
+import { StyleSheet, View, Text } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -11,10 +12,10 @@ const Tab = createBottomTabNavigator();
 
 function MainContainer() {
   return (
-    <NavigationContainer>
+    <NavigationContainer independent={true}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
+          tabBarIcon: ({ focused, color }) => {
             let iconName;
 
             if (route.name === "Mood") {
@@ -24,25 +25,57 @@ function MainContainer() {
             }
 
             // You can return any component that you like here!
-            return <Ionicons name={iconName} size={size} color={color} />;
+            return (
+              <Ionicons
+                name={iconName}
+                color={color}
+                size={25}
+                style={{ justifyContent: "space-between" }}
+              />
+            );
           },
-          tabBarActiveTintColor: "tomato",
+          tabBarActiveTintColor: "black",
           tabBarInactiveTintColor: "gray",
+          tabBarStyle: {
+            bottom: 35,
+            left: 40,
+            right: 40,
+            position: "absolute",
+            borderRadius: 15,
+            backgroundColor: "#ffffff",
+            ...styles.shadow,
+          },
         })}
       >
         <Tab.Screen
           name="Mood"
           component={MoodScreen}
           options={{
-            headerStyle: {
-              backgroundColor: "tomato",
-            },
+            headerTransparent: true,
+            headerBackTitleVisible: false,
           }}
         />
-        <Tab.Screen name="Social" component={SocialScreen} />
+        <Tab.Screen
+          name="Social"
+          component={SocialScreen}
+          options={{
+            headerTransparent: true,
+            headerBackTitleVisible: false,
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+  },
+});
 
 export default MainContainer;
