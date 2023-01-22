@@ -10,6 +10,18 @@ import SocialScreen from "./screens/SocialScreen";
 
 const Tab = createBottomTabNavigator();
 
+const sendNotification = async () => {
+  // Define the notification content
+  const notification = new Notifications.Notification({
+    title: "Soundscape",
+    body: "Time to tell us how you feel",
+    data: { mySpecialData: "Some data" },
+  });
+
+  // Schedule the notification to be sent immediately
+  await Notifications.scheduleNotificationAsync(notification);
+};
+
 function MainContainer() {
   return (
     <NavigationContainer independent={true}>

@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Button } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { Audio } from "expo-av";
 import * as Sharing from "expo-sharing";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -25,6 +25,7 @@ export default function MoodScreen() {
   const [emotion, setEmotion] = React.useState("starting");
   const [message, setMessage] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [playlist, setPlaylist] = React.useState([]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -115,6 +116,16 @@ export default function MoodScreen() {
     return `${minutesDisplay}:${secondsDisplay}`;
   }
 
+  function getPlaylist() {
+    fetch("http://23.119.122.47:5000/happydist")
+      .then((response) => response.json())
+      .then((data) => {
+        setPlaylist(data);
+        for (var c = 1; c < data.length + 1; c++) {
+          playlist[c - 1]["key"] = c.toString();
+        }
+      });
+  }
   return (
     // <View style={styles.container}>
     //   <Text style={styles.text}>Say something and get your music taste</Text>
@@ -146,7 +157,6 @@ export default function MoodScreen() {
     // </View>
     <LinearGradient colors={gradientColor[emotion]} style={styles.container}>
       <View style={styles.headerContainer}>
-        {/*<Image source={require("path/to/logo.png")} style={styles.logo} />*/}
         <Text style={styles.headerText}>Tell me how you feel</Text>
       </View>
       <View style={styles.recordButtonContainer}>
@@ -160,40 +170,21 @@ export default function MoodScreen() {
           </View>
         </TouchableOpacity>
       </View>
-      {/* {loading ? (
-        <ClipLoader color={"#D0021B"} loading={loading} size={100} />
-      ) : (
-        
-      )} */}
-      <TouchableOpacity
-        title="Data"
-        onPress={() => {
-          fetch("http://23.119.122.47:5000/playlists")
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data);
-            });
-        }}
-      >
-        <Text style={{ color: "white" }}>Data</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        title="Data"
-        onPress={() => {
-          fetch("http://23.119.122.47:5000/loadtracksintodb")
-            .then((response) => response.json())
-            .then((data) => {
-              console.log(data);
-            });
-        }}
-      >
+      <TouchableOpacity title="Data" onPress={() => {}}>
         <Text style={{ color: "white" }}>Upload Songs</Text>
       </TouchableOpacity>
       <View style={styles.emotionContainer}>
         {recording != "" && emotion != "starting" ? (
-          <Text style={styles.emotionText}>
-            My analysis shows you are feeling {emotion}
-          </Text>
+          <View>
+            <Text style={styles.emotionText}>
+              My analysis shows you are feeling {emotion}
+            </Text>
+            <FlatList
+              data={info}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => <View></View>}
+            />
+          </View>
         ) : (
           <Text></Text>
         )}

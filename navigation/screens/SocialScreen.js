@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image, Linking } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function SocialScreen() {
+  const [info, setInfo] = useState([]);
+
   const gradientColor = {
     starting: ["#73bbff", "#73bbff"],
     happy: ["#FFFFB7", "#FFFFB7"],
@@ -14,60 +16,67 @@ export default function SocialScreen() {
   };
   const SERVER_URL = "http://23.119.122.47:5000/";
 
-  useEffect(() => {
+  const refesh = () => {
     fetch(SERVER_URL + "get_feed")
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        setInfo(data);
+        for (var c = 1; c < data.length + 1; c++) {
+          info[c - 1]["key"] = c.toString();
+        }
       });
-  }, []);
+  };
+  // const data = [
+  //   {
+  //     key: "1",
+  //     username: "username",
+  //     mood: "sad",
+  //     compatability: 0.9,
+  //     spotify: "",
+  //   },
+  //   {
+  //     key: "2",
+  //     username: "username",
+  //     mood: "happy",
+  //     compatability: 0.9,
+  //     spotify: "",
+  //   },
+  //   {
+  //     key: "3",
+  //     username: "username",
+  //     mood: "sad",
+  //     compatability: 0.9,
+  //     spotify: "",
+  //   },
+  //   {
+  //     key: "4",
+  //     username: "username",
+  //     mood: "angry",
+  //     compatability: 0.9,
+  //     spotify: "",
+  //   },
+  //   {
+  //     key: "5",
+  //     username: "username",
+  //     mood: "angry",
+  //     compatability: 0.9,
+  //     spotify: "",
+  //   },
+  // ];
 
-  const data = [
-    {
-      key: "1",
-      username: "username",
-      mood: "sad",
-      compatability: 0.9,
-      spotify: "",
-    },
-    {
-      key: "2",
-      username: "username",
-      mood: "happy",
-      compatability: 0.9,
-      spotify: "",
-    },
-    {
-      key: "3",
-      username: "username",
-      mood: "sad",
-      compatability: 0.9,
-      spotify: "",
-    },
-    {
-      key: "4",
-      username: "username",
-      mood: "angry",
-      compatability: 0.9,
-      spotify: "",
-    },
-    {
-      key: "5",
-      username: "username",
-      mood: "angry",
-      compatability: 0.9,
-      spotify: "",
-    },
-  ];
+  console.log(info);
 
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerText}>Discover</Text>
+        <TouchableOpacity onPress={refesh}>
+          <Text>Refresh</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.listContainer}>
         <FlatList
-          data={data}
+          data={info}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <LinearGradient
@@ -106,10 +115,23 @@ export default function SocialScreen() {
                   </View>
                 </View>
 
-                <Text style={{ marginRight: 20 }}>{item.compatability}</Text>
+                <Text style={{ marginRight: 20 }}>{item.compatibility}</Text>
               </View>
               <View>
-                <TouchableOpacity style={styles.button} onPress={() => {}}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => {
+                    Linking.canOpenURL(item.spotify).then((supported) => {
+                      if (supported) {
+                        Linking.openURL(item.spotify);
+                      } else {
+                        console.log(
+                          "Don't know how to open URI: " + this.props.url
+                        );
+                      }
+                    });
+                  }}
+                >
                   <Text>Playlist</Text>
                 </TouchableOpacity>
               </View>
